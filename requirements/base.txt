@@ -1,0 +1,29 @@
+# Core Django packages
+Django>=5.0,<5.1
+djangorestframework>=3.14,<3.15
+djangorestframework-simplejwt>=5.3,<5.4
+
+# Database
+psycopg2-binary>=2.9,<3.0
+
+# Celery for background tasks
+celery>=5.3,<5.4
+redis>=5.0,<6.0
+
+# API documentation
+drf-spectacular>=0.27,<0.28
+
+# Filtering and search
+django-filter>=23.5,<24.0
+
+# CORS headers
+django-cors-headers>=4.3,<4.4
+
+# Environment variables
+python-decouple>=3.8,<4.0
+
+# HTTP requests
+requests>=2.31,<3.0
+
+# Rate limiting
+django-ratelimit>=4.1,<5.0

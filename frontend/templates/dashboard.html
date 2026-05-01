@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Django API Aggregator{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Content Dashboard</h1>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Filter Content</h5>
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="source" class="form-label">Source</label>
+                        <select name="source" id="source" class="form-select">
+                            <option value="">All Sources</option>
+                            <option value="nasa" {% if request.GET.source == 'nasa' %}selected{% endif %}>NASA</option>
+                            <option value="weather" {% if request.GET.source == 'weather' %}selected{% endif %}>Weather</option>
+                            <option value="movie" {% if request.GET.source == 'movie' %}selected{% endif %}>Movies</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" name="search" id="search" class="form-control" value="{{ request.GET.search }}" placeholder="Search title or description">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Clear</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <canvas id="contentChart" height="80"></canvas>
+    </div>
+</div>
+
+<div class="row">
+    {% for item in content_list %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            {% if item.image_url %}
+            <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.title }}" style="height: 200px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <span class="badge bg-primary mb-2">{{ item.get_source_display }}</span>
+                <h5 class="card-title">{{ item.title }}</h5>
+                <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+                <p class="text-muted small">
+                    <i class="bi bi-calendar"></i> {{ item.published_date|date:"M d, Y" }}
+                </p>
+            </div>
+            <div class="card-footer">
+                {% if item.content_url %}
+                <a href="{{ item.content_url }}" target="_blank" class="btn btn-sm btn-outline-primary">View Details</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">No content available. Please check back later.</div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1{% if request.GET.source %}&source={{ request.GET.source }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.source %}&source={{ request.GET.source }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.source %}&source={{ request.GET.source }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.source %}&source={{ request.GET.source }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById('contentChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Content Count by Source',
+                data: {{ chart_data|safe }},
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

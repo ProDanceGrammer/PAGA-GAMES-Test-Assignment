@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Django API Aggregator{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 mb-4">Welcome to API Aggregator</h1>
+        <p class="lead mb-4">
+            A unified platform that aggregates content from NASA, OpenWeather, and TMDB APIs.
+        </p>
+
+        <div class="row mt-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="bi bi-rocket-takeoff fs-1 text-primary"></i>
+                        <h5 class="card-title mt-3">NASA APOD</h5>
+                        <p class="card-text">Astronomy Picture of the Day from NASA</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="bi bi-cloud-sun fs-1 text-info"></i>
+                        <h5 class="card-title mt-3">Weather Data</h5>
+                        <p class="card-text">Real-time weather information from OpenWeather</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="bi bi-film fs-1 text-danger"></i>
+                        <h5 class="card-title mt-3">Popular Movies</h5>
+                        <p class="card-text">Trending movies from TMDB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">View Dashboard</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">Register</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
